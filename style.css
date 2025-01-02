@@ -285,12 +285,13 @@ main {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 100%;
+  /* width: 100%; */
+  max-height: fit-content;
 }
 
-.stack-image img {
+/* .stack-image img {
   transition: all 0.3s ease;
-}
+} */
 .stack-image{
   width: 100%;
   display: flex;
@@ -310,16 +311,17 @@ main {
 } */
 
 .stack-image img {
-  width: 150px;
-  height: 100px;
+  aspect-ratio: 1;
+  width: 100%;
+  /* height: 100px; */
 }
 
-@media (max-width:1200px) {
+/* @media (max-width:1200px) {
   .stack-image img {
       width: 50%;
       height: 50%;
   }
-}
+} */
 
 @media (max-width:768px) {
   .intro {
