@@ -1,8 +1,8 @@
 services:
   web:
+    image: insanelyharsh/web-portfolio:latest
     build: .
-    ports:
-      - "3000:3000"
+    network_mode: host
     environment:
       - PORT=3000
     restart: unless-stopped
