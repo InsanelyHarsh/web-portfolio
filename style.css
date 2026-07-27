@@ -119,6 +119,8 @@ a.active,a:hover{
 body{
   /* using whole screen */
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 nav{
@@ -212,6 +214,7 @@ main {
 /* } */
 
 main {
+  flex: 1 0 auto;
   max-width: 100%;
   margin: 2rem auto;
   padding: 1rem;
