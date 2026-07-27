@@ -1,5 +1,5 @@
 services:
-  web:
+  web-portfolio:
     image: insanelyharsh/web-portfolio:latest
     build: .
     network_mode: host

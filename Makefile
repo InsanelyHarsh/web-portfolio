@@ -2,7 +2,7 @@ IMAGE := insanelyharsh/web-portfolio:latest
 PLATFORMS := linux/amd64,linux/arm64
 BUILDER := web-portfolio-builder
 
-.PHONY: build push pull up down buildx
+.PHONY: build push pull up down buildx logs restart ps
 
 build:
 	docker build -t $(IMAGE) .
@@ -24,3 +24,12 @@ up:
 
 down:
 	docker compose down
+
+restart:
+	docker compose restart
+
+logs:
+	docker compose logs -f
+
+ps:
+	docker compose ps
