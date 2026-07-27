@@ -265,14 +265,13 @@ main {
 /* tech stack */
 
 .tech-stack {
-  margin-top: 50px;
   gap: 10px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
-  margin: 0 auto;
+  margin: 50px auto 0;
   color: gray;
   max-height: fit-content;
 }
