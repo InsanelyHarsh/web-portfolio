@@ -1,6 +1,6 @@
-IMAGE := insanelyharsh/web-portfolio-blog-backend:latest
+IMAGE := insanelyharsh/blogs-backend:latest
 PLATFORMS := linux/amd64,linux/arm64
-BUILDER := web-portfolio-blog-backend-builder
+BUILDER := blogs-backend
 
 .PHONY: build push pull up down buildx logs restart ps postgres_connect
 

@@ -15,8 +15,8 @@ services:
       timeout: 5s
       retries: 5
 
-  webserver:
-    image: insanelyharsh/web-portfolio-blog-backend:latest
+  blogs-backend:
+    image: insanelyharsh/blogs-backend:latest
     build: .
     restart: unless-stopped
     env_file: .env
