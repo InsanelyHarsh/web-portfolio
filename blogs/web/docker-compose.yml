@@ -1,0 +1,8 @@
+services:
+  blogs-web:
+    image: insanelyharsh/blogs-web:latest
+    build: .
+    network_mode: host
+    env_file:
+      - .env
+    restart: unless-stopped
