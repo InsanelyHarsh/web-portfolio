@@ -63,7 +63,7 @@ function renderBlogList(container, items) {
 // Renders a single Blog into `container` (a <article class="post__content">).
 function renderBlogPost(container, blog) {
   container.innerHTML = "";
-  document.title = `${blog.title} — insanelyharsh blogs`;
+  document.title = `${blog.title} — Insanely Blogs`;
 
   const title = document.createElement("h1");
   title.className = "post__title";

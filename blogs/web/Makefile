@@ -1,6 +1,6 @@
 IMAGE := insanelyharsh/blogs-web:latest
 PLATFORMS := linux/amd64,linux/arm64
-BUILDER := blogs-web-builder
+BUILDER := blogs-web
 
 .PHONY: build push pull up down buildx logs restart ps
 
