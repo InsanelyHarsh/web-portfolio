@@ -71,6 +71,27 @@ func TestMarkdownToHTML_StripsJavascriptHref(t *testing.T) {
 	}
 }
 
+func TestMarkdownToPlainText_StripsMarkup(t *testing.T) {
+	out := string(MarkdownToPlainText([]byte("## Heading\n\nHello **world**.")))
+
+	if strings.Contains(out, "<") || strings.Contains(out, "#") || strings.Contains(out, "*") {
+		t.Fatalf("expected all markup stripped, got: %s", out)
+	}
+	if !strings.Contains(out, "Heading") || !strings.Contains(out, "Hello world.") {
+		t.Fatalf("expected text content preserved, got: %s", out)
+	}
+}
+
+func TestMarkdownToPlainText_StripsScriptTag(t *testing.T) {
+	md := "Hello <script>alert('xss')</script> world"
+
+	out := string(MarkdownToPlainText([]byte(md)))
+
+	if strings.Contains(out, "<script") || strings.Contains(out, "alert") {
+		t.Fatalf("expected <script> tag and its contents to be stripped, got: %s", out)
+	}
+}
+
 func TestMarkdownToHTML_StripsArbitraryClass(t *testing.T) {
 	md := `<p class="not-a-language-tag">text</p>`
 

@@ -12,13 +12,15 @@ import (
 	"github.com/insanelyharsh/web-portfolio/internal/blog/repository"
 	"github.com/insanelyharsh/web-portfolio/internal/config"
 	"github.com/insanelyharsh/web-portfolio/internal/logger"
+	"github.com/insanelyharsh/web-portfolio/internal/migration"
 	"github.com/insanelyharsh/web-portfolio/internal/webserver"
 	"github.com/insanelyharsh/web-portfolio/internal/webserver/routes"
 )
 
 func main() {
-	// TODO: load a .env file for local dev; for now env vars (DATABASE_URL,
-	// PORT, LOG_LEVEL) are expected to be set externally (shell/docker-compose).
+	// DATABASE_URL, PORT, and LOG_LEVEL are expected to be set externally —
+	// via the shell for local `go run`, or via docker-compose's env_file for
+	// the containerized setup (see docker-compose.yml).
 	logger.Init()
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
@@ -30,6 +32,11 @@ func main() {
 		os.Exit(1)
 	}
 	defer conn.Close(context.Background())
+
+	if err := migration.Run(ctx, conn); err != nil {
+		slog.Error("failed to run migrations", "error", err)
+		os.Exit(1)
+	}
 
 	// NewBlogRepository takes pgx.Conn by value; a single one-time copy off
 	// the pointer InitPostgres returns is safe here since nothing else

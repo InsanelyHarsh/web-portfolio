@@ -47,6 +47,18 @@ func newSanitizePolicy() *bluemonday.Policy {
 	return p
 }
 
+// stripPolicy removes every HTML tag, leaving plain text. Built once and
+// reused, like htmlPolicy.
+var stripPolicy = bluemonday.StrictPolicy()
+
+// MarkdownToPlainText renders markdown to HTML (reusing MarkdownToHTML's
+// sanitized pipeline) then strips all remaining tags, leaving plain text
+// suitable for previews/excerpts.
+func MarkdownToPlainText(md []byte) []byte {
+	html := MarkdownToHTML(md)
+	return stripPolicy.SanitizeBytes(html)
+}
+
 // MarkdownToHTML renders markdown source to HTML and sanitizes the result so
 // it is safe to embed directly in a page. Markdown source may come from an
 // untrusted or semi-trusted author, so sanitization is not optional: it

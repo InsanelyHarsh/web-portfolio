@@ -37,6 +37,19 @@ func (m *BlogManager) GetBlogContentById(ctx context.Context, id types.BlogId) (
 	return toBlogDTO(blog), nil
 }
 
+func (m *BlogManager) GetBlogList(ctx context.Context) ([]*dtos.BlogListItem, error) {
+	items, err := m.repo.GetBlogList(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	dtoItems := make([]*dtos.BlogListItem, 0, len(items))
+	for _, item := range items {
+		dtoItems = append(dtoItems, toBlogListItemDTO(item))
+	}
+	return dtoItems, nil
+}
+
 func (m *BlogManager) GetBlogContentBySlug(ctx context.Context, slug types.BlogSlug) (*dtos.Blog, error) {
 	blog, err := m.repo.GetBlogContentBySlug(ctx, slug)
 	if err != nil {

@@ -14,3 +14,10 @@ type Blog struct {
 	CreatedAt time.Time      `json:"createdAt"`
 	UpdatedAt time.Time      `json:"updatedAt"`
 }
+
+type BlogListItem struct {
+	Id      types.BlogId   `json:"id"`
+	Slug    types.BlogSlug `json:"slug"`
+	Title   string         `json:"title"`
+	Excerpt string         `json:"excerpt"`
+}

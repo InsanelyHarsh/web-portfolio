@@ -10,13 +10,17 @@ import (
 	"github.com/insanelyharsh/web-portfolio/internal/types"
 )
 
-// RegisterBlogRoutes registers the blog HTTP endpoints on mux, backed by
-// manager. The two patterns never overlap: "/blogs/{slug}" only matches a
-// single path segment after "/blogs/", while "/blogs/id/{id}" only matches
-// two.
 func RegisterBlogRoutes(mux *http.ServeMux, manager *blog.BlogManager) {
+	mux.HandleFunc("GET /blogs", getBlogListHandler(manager))
 	mux.HandleFunc("GET /blogs/id/{id}", getBlogByIdHandler(manager))
 	mux.HandleFunc("GET /blogs/{slug}", getBlogBySlugHandler(manager))
+}
+
+func getBlogListHandler(manager *blog.BlogManager) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		list, err := manager.GetBlogList(r.Context())
+		writeBlogResult(w, list, err)
+	}
 }
 
 func getBlogByIdHandler(manager *blog.BlogManager) http.HandlerFunc {
