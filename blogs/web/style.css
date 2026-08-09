@@ -124,6 +124,52 @@ body {
   text-decoration: underline;
 }
 
+/* Backend-rendered post content (Markdown -> HTML) */
+.post__body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.post__body a {
+  color: var(--accent);
+}
+
+.post__body code {
+  background-color: var(--bg-elevated);
+  padding: 0.15em 0.35em;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.post__body pre {
+  background-color: var(--bg-elevated);
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.post__body pre code {
+  padding: 0;
+}
+
+.post__body blockquote {
+  border-left: 3px solid var(--border);
+  padding-left: 1rem;
+  color: var(--text-secondary);
+}
+
+.post__body h1,
+.post__body h2,
+.post__body h3 {
+  margin-top: 0.5rem;
+}
+
+/* Fetch/validation error states */
+.error-message {
+  color: #e07a5f;
+}
+
 /* Responsive basics */
 @media (max-width: 480px) {
   .navbar__title {
