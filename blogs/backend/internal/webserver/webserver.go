@@ -13,21 +13,33 @@ type WebServer struct {
 	server *http.Server
 }
 
+// Config holds everything InitWebServer needs to wire up the server. It
+// exists so callers (main.go) build one env-driven value instead of passing
+// a growing list of positional parameters.
+type Config struct {
+	Port               string
+	CORSAllowedOrigins []string
+	CORSAllowedHeaders []string
+}
+
 // InitWebServer wires up the mux with the standard middleware chain. Trace
 // id is applied outermost so it populates the request context (and response
 // header) before the logger middleware runs and reads it back for the log
-// line.
-func InitWebServer(port string) *WebServer {
+// line. CORS sits innermost, directly around the mux, so preflight OPTIONS
+// requests are still logged and trace-tagged even though CORS answers them
+// itself instead of forwarding to a route.
+func InitWebServer(cfg Config) *WebServer {
 	mux := http.NewServeMux()
 
 	var handler http.Handler = mux
+	handler = middlewares.CORSMiddleware(cfg.CORSAllowedOrigins, cfg.CORSAllowedHeaders)(handler)
 	handler = middlewares.LoggerMiddleware(handler)
 	handler = middlewares.TraceIdMiddleware(handler)
 
 	return &WebServer{
 		mux: mux,
 		server: &http.Server{
-			Addr:    ":" + port,
+			Addr:    ":" + cfg.Port,
 			Handler: handler,
 		},
 	}

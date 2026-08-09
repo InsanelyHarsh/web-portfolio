@@ -49,7 +49,28 @@ func main() {
 		port = "8080"
 	}
 
-	ws := webserver.InitWebServer(port)
+	// Normalized defensively: a value with a path/query pasted in by mistake
+	// (e.g. a full page URL instead of just its origin) would otherwise
+	// silently never match a browser's Origin header and CORS would appear
+	// to just not work.
+	corsAllowedOrigins := config.ParseCommaSeparated(os.Getenv("CORS_ALLOWED_ORIGIN"))
+	for i, origin := range corsAllowedOrigins {
+		corsAllowedOrigins[i] = config.NormalizeOrigin(origin)
+	}
+	if len(corsAllowedOrigins) == 0 {
+		corsAllowedOrigins = []string{"http://localhost:3000"}
+	}
+
+	corsAllowedHeaders := config.ParseCommaSeparated(os.Getenv("CORS_ALLOWED_HEADERS"))
+	if len(corsAllowedHeaders) == 0 {
+		corsAllowedHeaders = []string{"Content-Type", "Authorization"}
+	}
+
+	ws := webserver.InitWebServer(webserver.Config{
+		Port:               port,
+		CORSAllowedOrigins: corsAllowedOrigins,
+		CORSAllowedHeaders: corsAllowedHeaders,
+	})
 	routes.RegisterBlogRoutes(ws.Mux(), manager)
 
 	serveErr := make(chan error, 1)
