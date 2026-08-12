@@ -37,6 +37,8 @@ function loadEnv() {
 loadEnv();
 
 const PORT = process.env.PORT || 8081;
+const API_BASE = process.env.API_BASE || 'http://localhost:8080';
+const APP_JS_PATH = path.join(ROOT, 'app.js');
 
 const CONTENT_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -50,7 +52,8 @@ const CONTENT_TYPES = {
 };
 
 const server = http.createServer((req, res) => {
-  const requestPath = req.url === '/' ? '/index.html' : req.url;
+  const urlPath = req.url.split('?')[0];
+  const requestPath = urlPath === '/' ? '/index.html' : urlPath;
   const safePath = path.normalize(decodeURIComponent(requestPath)).replace(/^(\.\.[/\\])+/, '');
   const filePath = path.join(ROOT, safePath);
 
@@ -76,6 +79,14 @@ const server = http.createServer((req, res) => {
     const ext = path.extname(filePath).toLowerCase();
     const contentType = CONTENT_TYPES[ext] || 'application/octet-stream';
     res.writeHead(200, { 'Content-Type': contentType });
+
+    // app.js ships with an __API_BASE__ placeholder so the backend URL can
+    // be configured via env rather than hardcoded into the static asset.
+    if (filePath === APP_JS_PATH) {
+      res.end(data.toString('utf8').replace('__API_BASE__', API_BASE));
+      return;
+    }
+
     res.end(data);
   });
 });

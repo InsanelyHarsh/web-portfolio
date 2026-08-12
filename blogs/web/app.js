@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:8080";
+const API_BASE = "__API_BASE__";
 
 async function fetchBlogList() {
   const res = await fetch(`${API_BASE}/blogs`);

@@ -12,8 +12,9 @@ push:
 
 # builds & pushes a multi-arch (amd64 + arm64) image in one go
 buildx:
-	docker buildx inspect $(BUILDER) >/dev/null 2>&1 || docker buildx create --name $(BUILDER) --use
+	docker buildx inspect $(BUILDER) >/dev/null 2>&1 || docker buildx create --name $(BUILDER) --driver docker-container --use
 	docker buildx use $(BUILDER)
+	docker buildx inspect --bootstrap
 	docker buildx build --platform $(PLATFORMS) -t $(IMAGE) --push .
 
 pull:
