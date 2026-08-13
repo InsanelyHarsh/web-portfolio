@@ -37,8 +37,27 @@ function loadEnv() {
 loadEnv();
 
 const PORT = process.env.PORT || 8081;
-const API_BASE = process.env.API_BASE || 'http://localhost:8080';
+
+// Guards against a malformed API_BASE (missing scheme, trailing slash) silently
+// producing a relative URL in the browser instead of an absolute one.
+function normalizeApiBase(value) {
+  let v = value.trim().replace(/\/+$/, '');
+  if (v && !/^https?:\/\//i.test(v)) {
+    v = 'https://' + v;
+  }
+  return v;
+}
+
+const API_BASE = normalizeApiBase(process.env.API_BASE || 'http://localhost:8080');
 const APP_JS_PATH = path.join(ROOT, 'app.js');
+
+// Logs one line per request: timestamp, method, url, status, and (for
+// failures) a short reason so issues are visible without re-running curl.
+function logRequest(req, statusCode, detail) {
+  const ts = new Date().toISOString();
+  const base = `[${ts}] ${req.method} ${req.url} -> ${statusCode}`;
+  console.log(detail ? `${base} (${detail})` : base);
+}
 
 const CONTENT_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -61,6 +80,7 @@ const server = http.createServer((req, res) => {
   if (!filePath.startsWith(ROOT)) {
     res.writeHead(403, { 'Content-Type': 'text/plain' });
     res.end('403 Forbidden');
+    logRequest(req, 403, 'path traversal blocked');
     return;
   }
 
@@ -69,9 +89,12 @@ const server = http.createServer((req, res) => {
       if (err.code === 'ENOENT') {
         res.writeHead(404, { 'Content-Type': 'text/plain' });
         res.end('404 Not Found');
+        logRequest(req, 404, 'not found');
       } else {
         res.writeHead(500, { 'Content-Type': 'text/plain' });
         res.end('500 Internal Server Error');
+        console.error(err.stack || err);
+        logRequest(req, 500, err.message);
       }
       return;
     }
@@ -84,10 +107,12 @@ const server = http.createServer((req, res) => {
     // be configured via env rather than hardcoded into the static asset.
     if (filePath === APP_JS_PATH) {
       res.end(data.toString('utf8').replace('__API_BASE__', API_BASE));
+      logRequest(req, 200);
       return;
     }
 
     res.end(data);
+    logRequest(req, 200);
   });
 });
 

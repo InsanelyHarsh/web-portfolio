@@ -5,6 +5,7 @@
   --text-secondary: #a0a0a0;
   --accent: #6ea8fe;
   --border: #2c2c2c;
+  --title-color: #b8bcc4;
 }
 
 * {
@@ -34,7 +35,7 @@ body {
 }
 
 .navbar__title {
-  color: var(--accent);
+  color: var(--title-color);
   text-decoration: none;
   font-size: 1.25rem;
   font-weight: 600;
