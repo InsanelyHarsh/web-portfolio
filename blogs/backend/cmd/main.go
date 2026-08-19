@@ -12,6 +12,8 @@ import (
 	"github.com/insanelyharsh/web-portfolio/internal/blog/repository"
 	"github.com/insanelyharsh/web-portfolio/internal/config"
 	"github.com/insanelyharsh/web-portfolio/internal/logger"
+	"github.com/insanelyharsh/web-portfolio/internal/media"
+	mediarepository "github.com/insanelyharsh/web-portfolio/internal/media/repository"
 	"github.com/insanelyharsh/web-portfolio/internal/migration"
 	"github.com/insanelyharsh/web-portfolio/internal/webserver"
 	"github.com/insanelyharsh/web-portfolio/internal/webserver/routes"
@@ -44,6 +46,14 @@ func main() {
 	repo := repository.NewBlogRepository(*conn)
 	manager := blog.NewBlogManager(repo)
 
+	r2Client, r2Cfg, err := config.InitCloudflareR2()
+	if err != nil {
+		slog.Error("failed to init cloudflare r2", "error", err)
+		os.Exit(1)
+	}
+	mediaRepo := mediarepository.NewMediaRepository(r2Client, r2Cfg)
+	mediaManager := media.NewMediaManager(mediaRepo)
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -72,6 +82,7 @@ func main() {
 		CORSAllowedHeaders: corsAllowedHeaders,
 	})
 	routes.RegisterBlogRoutes(ws.Mux(), manager)
+	routes.RegisterMediaRoutes(ws.Mux(), mediaManager)
 
 	serveErr := make(chan error, 1)
 	go func() {
