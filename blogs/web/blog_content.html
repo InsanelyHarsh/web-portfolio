@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Insane Blogs</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="navbar">
+    <a href="blog_list.html" class="navbar__title">Insane Blogs</a>
+  </header>
+
+  <main class="post">
+    <article class="post__content" id="post-content"></article>
+  </main>
+
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const container = document.getElementById("post-content");
+      const slug = new URLSearchParams(location.search).get("slug");
+
+      if (!slug) {
+        renderError(container, new Error("Missing slug in URL"));
+        return;
+      }
+
+      fetchBlogBySlug(slug)
+        .then((html) => renderBlogPost(container, html))
+        .catch((err) => renderError(container, err));
+    });
+  </script>
+</body>
+</html>

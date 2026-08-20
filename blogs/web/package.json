@@ -1,0 +1,12 @@
+{
+  "name": "blogs-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Blogs frontend site written in HTML, CSS and bit of JS",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
