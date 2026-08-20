@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/insanelyharsh/web-portfolio/dtos"
 	"github.com/insanelyharsh/web-portfolio/internal/blog"
 	"github.com/insanelyharsh/web-portfolio/internal/types"
 )
@@ -33,7 +34,7 @@ func getBlogByIdHandler(manager *blog.BlogManager) http.HandlerFunc {
 		}
 
 		content, err := manager.GetBlogContentById(r.Context(), types.BlogId(id))
-		writeBlogResult(w, content, err)
+		writeBlogHTMLResult(w, content, err)
 	}
 }
 
@@ -42,7 +43,7 @@ func getBlogBySlugHandler(manager *blog.BlogManager) http.HandlerFunc {
 		slug := r.PathValue("slug")
 
 		content, err := manager.GetBlogContentBySlug(r.Context(), types.BlogSlug(slug))
-		writeBlogResult(w, content, err)
+		writeBlogHTMLResult(w, content, err)
 	}
 }
 
@@ -58,4 +59,18 @@ func writeBlogResult(w http.ResponseWriter, content any, err error) {
 
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(content)
+}
+
+func writeBlogHTMLResult(w http.ResponseWriter, content *dtos.Blog, err error) {
+	if err != nil {
+		if errors.Is(err, blog.ErrNotFound) {
+			http.Error(w, "blog not found", http.StatusNotFound)
+			return
+		}
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	_, _ = w.Write([]byte(content.Content))
 }
