@@ -35,7 +35,9 @@ async function fetchBlogBySlug(slug) {
     console.error(`[blogs] GET ${url} -> ${res.status} ${res.statusText}`);
     throw new Error(`Failed to fetch blog by slug "${slug}": ${res.status} ${res.statusText}`);
   }
-  return res.json();
+  // The backend renders the post server-side and returns it as raw HTML
+  // (not JSON) — title and images are already embedded in the markup.
+  return res.text();
 }
 
 async function fetchBlogById(id) {
@@ -56,7 +58,8 @@ async function fetchBlogById(id) {
     console.error(`[blogs] GET ${url} -> ${res.status} ${res.statusText}`);
     throw new Error(`Failed to fetch blog by id "${id}": ${res.status} ${res.statusText}`);
   }
-  return res.json();
+  // Same as fetchBlogBySlug: raw HTML, not JSON.
+  return res.text();
 }
 
 // Renders a list of BlogListItem into `container` as clickable cards.
@@ -89,28 +92,18 @@ function renderBlogList(container, items) {
   });
 }
 
-// Renders a single Blog into `container` (a <article class="post__content">).
-function renderBlogPost(container, blog) {
+// Renders a single blog post's HTML into `container` (a
+// <article class="post__content">). `html` is the backend's fully
+// server-rendered post markup (title heading and image URLs already
+// embedded), so it's injected as-is rather than being assembled from parts.
+function renderBlogPost(container, html) {
   container.innerHTML = "";
-  document.title = `${blog.title} — Insane Blogs`;
-
-  const title = document.createElement("h1");
-  title.className = "post__title";
-  title.textContent = blog.title;
-
-  const meta = document.createElement("p");
-  meta.className = "post__meta";
-  meta.textContent = new Date(blog.createdAt).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
 
   const body = document.createElement("div");
   body.className = "post__body";
   // Trusted: this is the site owner's own backend-rendered content, not
   // user-submitted input, so no sanitization step is added here.
-  body.innerHTML = blog.content;
+  body.innerHTML = html;
 
   const backPara = document.createElement("p");
   const backLink = document.createElement("a");
@@ -119,7 +112,7 @@ function renderBlogPost(container, blog) {
   backLink.textContent = "← Back to all posts";
   backPara.appendChild(backLink);
 
-  container.append(title, meta, body, backPara);
+  container.append(body, backPara);
 }
 
 // Renders a fetch/validation error into `container`.

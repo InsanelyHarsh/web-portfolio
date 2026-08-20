@@ -51,6 +51,29 @@ func newSanitizePolicy() *bluemonday.Policy {
 // reused, like htmlPolicy.
 var stripPolicy = bluemonday.StrictPolicy()
 
+// hashnodeImageAttrsPattern matches an image destination followed by one or
+// more trailing key="value" tokens glued inside the same parens, e.g.
+// Hashnode's markdown export writes image alignment as
+// "![](https://.../img.png align=\"center\")" instead of using a proper
+// CommonMark title. Because the opening quote there isn't preceded by
+// whitespace, gomarkdown doesn't recognize it as a title and instead folds
+// the whole "align=\"center\"" tail into the URL itself, producing a
+// destination containing a literal space; bluemonday's sanitizer then
+// rejects any non-data: URL containing whitespace and strips the src
+// attribute entirely.
+//
+// The `+` on the trailing group requires at least one such token to match,
+// so ordinary images with no trailing junk are left untouched.
+var hashnodeImageAttrsPattern = regexp.MustCompile(`(!\[[^\]]*\]\(\S+)(?:\s+\w+="[^"]*")+\)`)
+
+// stripHashnodeImageAttrs rewrites "(url attr=\"value\" ...)"-style trailing
+// tokens out of image destinations, leaving just "(url)", before the
+// markdown reaches gomarkdown. See hashnodeImageAttrsPattern for why this is
+// needed.
+func stripHashnodeImageAttrs(md []byte) []byte {
+	return hashnodeImageAttrsPattern.ReplaceAll(md, []byte("$1)"))
+}
+
 // MarkdownToPlainText renders markdown to HTML (reusing MarkdownToHTML's
 // sanitized pipeline) then strips all remaining tags, leaving plain text
 // suitable for previews/excerpts.
@@ -66,6 +89,8 @@ func MarkdownToPlainText(md []byte) []byte {
 // the HTML gomarkdown's default extensions produce, including fenced code
 // language classes and heading anchor ids.
 func MarkdownToHTML(md []byte) []byte {
+	md = stripHashnodeImageAttrs(md)
+
 	// A parser is stateful and must not be reused across Parse() calls, so a
 	// fresh one is created per call; only the sanitize policy is shared.
 	p := mdparser.NewWithExtensions(mdExtensions)

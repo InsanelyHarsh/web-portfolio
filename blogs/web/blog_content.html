@@ -27,7 +27,7 @@
       }
 
       fetchBlogBySlug(slug)
-        .then((blog) => renderBlogPost(container, blog))
+        .then((html) => renderBlogPost(container, html))
         .catch((err) => renderError(container, err));
     });
   </script>

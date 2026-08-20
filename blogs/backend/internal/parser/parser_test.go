@@ -92,6 +92,30 @@ func TestMarkdownToPlainText_StripsScriptTag(t *testing.T) {
 	}
 }
 
+func TestMarkdownToHTML_StripsHashnodeImageAlignHint(t *testing.T) {
+	md := `![](https://cdn.hashnode.com/res/hashnode/image/upload/v1738449767153/8f42482b-bd2e-42f4-a359-47b78c6d2f05.png align="center")`
+
+	out := string(MarkdownToHTML([]byte(md)))
+
+	wantSrc := `src="https://cdn.hashnode.com/res/hashnode/image/upload/v1738449767153/8f42482b-bd2e-42f4-a359-47b78c6d2f05.png"`
+	if !strings.Contains(out, wantSrc) {
+		t.Fatalf("expected image to keep its src with the align hint stripped, got: %s", out)
+	}
+	if strings.Contains(out, "align") {
+		t.Fatalf("expected align hint to be gone, got: %s", out)
+	}
+}
+
+func TestMarkdownToHTML_NormalImageSrcUnaffected(t *testing.T) {
+	md := `![alt text](https://example.com/a.png)`
+
+	out := string(MarkdownToHTML([]byte(md)))
+
+	if !strings.Contains(out, `src="https://example.com/a.png"`) {
+		t.Fatalf("expected ordinary image src to render unchanged, got: %s", out)
+	}
+}
+
 func TestMarkdownToHTML_StripsArbitraryClass(t *testing.T) {
 	md := `<p class="not-a-language-tag">text</p>`
 
