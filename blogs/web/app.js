@@ -1,64 +1,40 @@
 const API_BASE = "__API_BASE__";
 
-async function fetchBlogList() {
-  const url = `${API_BASE}/blogs`;
+// Shared GET helper: logs the request, distinguishes network failures from
+// HTTP error statuses, and gives 404s a caller-supplied message. Returns the
+// raw Response so callers can decide how to parse the body (json vs text).
+async function fetchOrThrow(url, { label, notFoundMessage } = {}) {
   console.log(`[blogs] GET ${url}`);
   let res;
   try {
     res = await fetch(url);
   } catch (err) {
     console.error(`[blogs] network error: GET ${url}`, err);
-    throw new Error(`Failed to fetch blog list: ${err.message}`);
+    throw new Error(`Failed to fetch ${label}: ${err.message}`);
+  }
+  if (notFoundMessage && res.status === 404) {
+    console.error(`[blogs] GET ${url} -> 404 (${notFoundMessage})`);
+    throw new Error(notFoundMessage);
   }
   if (!res.ok) {
     console.error(`[blogs] GET ${url} -> ${res.status} ${res.statusText}`);
-    throw new Error(`Failed to fetch blog list: ${res.status} ${res.statusText}`);
+    throw new Error(`Failed to fetch ${label}: ${res.status} ${res.statusText}`);
   }
+  return res;
+}
+
+async function fetchBlogList() {
+  const res = await fetchOrThrow(`${API_BASE}/blogs`, { label: "blog list" });
   return res.json();
 }
 
 async function fetchBlogBySlug(slug) {
-  const url = `${API_BASE}/blogs/${encodeURIComponent(slug)}`;
-  console.log(`[blogs] GET ${url}`);
-  let res;
-  try {
-    res = await fetch(url);
-  } catch (err) {
-    console.error(`[blogs] network error: GET ${url}`, err);
-    throw new Error(`Failed to fetch blog by slug "${slug}": ${err.message}`);
-  }
-  if (res.status === 404) {
-    console.error(`[blogs] GET ${url} -> 404 (no blog for slug "${slug}")`);
-    throw new Error(`Blog not found for slug "${slug}"`);
-  }
-  if (!res.ok) {
-    console.error(`[blogs] GET ${url} -> ${res.status} ${res.statusText}`);
-    throw new Error(`Failed to fetch blog by slug "${slug}": ${res.status} ${res.statusText}`);
-  }
+  const res = await fetchOrThrow(`${API_BASE}/blogs/${encodeURIComponent(slug)}`, {
+    label: `blog by slug "${slug}"`,
+    notFoundMessage: `Blog not found for slug "${slug}"`,
+  });
   // The backend renders the post server-side and returns it as raw HTML
   // (not JSON) — title and images are already embedded in the markup.
-  return res.text();
-}
-
-async function fetchBlogById(id) {
-  const url = `${API_BASE}/blogs/id/${encodeURIComponent(id)}`;
-  console.log(`[blogs] GET ${url}`);
-  let res;
-  try {
-    res = await fetch(url);
-  } catch (err) {
-    console.error(`[blogs] network error: GET ${url}`, err);
-    throw new Error(`Failed to fetch blog by id "${id}": ${err.message}`);
-  }
-  if (res.status === 404) {
-    console.error(`[blogs] GET ${url} -> 404 (no blog for id "${id}")`);
-    throw new Error(`Blog not found for id "${id}"`);
-  }
-  if (!res.ok) {
-    console.error(`[blogs] GET ${url} -> ${res.status} ${res.statusText}`);
-    throw new Error(`Failed to fetch blog by id "${id}": ${res.status} ${res.statusText}`);
-  }
-  // Same as fetchBlogBySlug: raw HTML, not JSON.
   return res.text();
 }
 
