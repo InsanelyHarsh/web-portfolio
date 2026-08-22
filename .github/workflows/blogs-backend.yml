@@ -1,0 +1,37 @@
+name: Build & Push - Blogs Backend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'blogs/backend/**'
+      - '.github/workflows/blogs-backend.yml'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./blogs/backend
+          platforms: linux/arm64
+          push: true
+          tags: |
+            insanelyharsh/blogs-backend:latest
+            insanelyharsh/blogs-backend:${{ github.sha }}
