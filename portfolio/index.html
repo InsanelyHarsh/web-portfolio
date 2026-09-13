@@ -5,26 +5,30 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portfolio - Harsh</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <nav>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
     <ul class="sidebar">
-      <li onclick=hideSidebar()><a href="#"><svg xmlns="http://www.w3.org/2000/svg" height="26" viewBox="0 96 960 960" width="26"><path d="m249 849-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/></svg></a></li>
-      <li><a href="#">Projects</a></li>
+      <li><button type="button" class="icon-button" id="closeSidebarBtn" aria-label="Close menu"><svg xmlns="http://www.w3.org/2000/svg" height="26" viewBox="0 96 960 960" width="26"><path d="m249 849-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/></svg></button></li>
+      <li><a href="#projects">Projects</a></li>
       <!-- <li><a target="_blank" href="https://hashnode.com/@insanelyharsh">Blog</a></li> -->
       <li><a target="_blank" href="https://blogs.insanelyharsh.com">Blog</a></li>
-      <li onclick=hideSidebar()><a href="#">Contact</a></li>
+      <li><button type="button" class="text-button" id="sidebarContactBtn">Contact</button></li>
       <li><a href="./Harsh M Yadav SDE - Resume.pdf" download="SDE Resume - Harsh Mohan Yadav">Resume</a></li>
     </ul>
     <ul>
       <li><a>Harsh Mohan Yadav</a></li>
-      <li class="hideOnMobile"><a href="#">Projects</a></li>
+      <li class="hideOnMobile"><a href="#projects">Projects</a></li>
       <!-- <li class="hideOnMobile"><a target="_blank" href="https://hashnode.com/@insanelyharsh">Blog</a></li> -->
       <li class="hideOnMobile"><a target="_blank" href="https://blogs.insanelyharsh.com">Blog</a></li>
-      <li class="hideOnMobile" onclick=scrollToBottom()><a>Contact</a></li>
+      <li class="hideOnMobile"><button type="button" class="text-button" id="contactBtn">Contact</button></li>
       <li class="hideOnMobile"><a target="_blank" href="./Harsh M Yadav SDE - Resume.pdf" download="SDE Resume - Harsh Mohan Yadav">Resume</a></li>
-      <li class="menu-button" onclick=showSidebar()><a href="#"><svg xmlns="http://www.w3.org/2000/svg" height="26" viewBox="0 96 960 960" width="26"><path d="M120 816v-60h720v60H120Zm0-210v-60h720v60H120Zm0-210v-60h720v60H120Z"/></svg></a></li>
+      <li class="menu-button"><button type="button" class="icon-button" id="openSidebarBtn" aria-label="Open menu"><svg xmlns="http://www.w3.org/2000/svg" height="26" viewBox="0 96 960 960" width="26"><path d="M120 816v-60h720v60H120Zm0-210v-60h720v60H120Zm0-210v-60h720v60H120Z"/></svg></button></li>
     </ul>
   </nav>
 
@@ -56,10 +60,111 @@
         </div>
       </section>
 
+      <!-- experience -->
+      <section class="experience" id="experience">
+
+        <p class="section-label">Where I've worked</p>
+
+        <div class="experience-list">
+          <article class="experience-item">
+            <div class="experience-header">
+              <div>
+                <h3>Software Development Engineer, Backend</h3>
+                <p class="experience-company">Zanskar Securities</p>
+              </div>
+              <span class="experience-dates">April 2025 &ndash; Present</span>
+            </div>
+            <ul class="experience-bullets">
+              <li>Owned payment, authentication, and RMS services on a live trading platform; scaled payment service to 1000+ daily transactions at a 90% success rate through multi-gateway integration with smart routing, internal retries, failover, and alerting.</li>
+              <li>Delivered margin allocation, withdrawal, and settlement flows, plus a standalone mandate/autopay service for recurring payments.</li>
+              <li>Built an authentication service handling thousands of requests across web, SDK, and mobile, featuring QR-based login over SSE, TOTP-based 2FA, alerting, and analytics/event collection.</li>
+              <li>Developed an internal RMS dashboard for monitoring orders, square-off, and client management, powered by gRPC, REST, NATS, and Elasticsearch.</li>
+              <li>Deployed services via Docker and ECR onto bare-metal servers with Grafana observability and Slack alerting, hardening reliability through test coverage and linters.</li>
+            </ul>
+          </article>
+
+          <article class="experience-item">
+            <div class="experience-header">
+              <div>
+                <h3>Software Development Engineer, Backend</h3>
+                <p class="experience-company">Samespace</p>
+              </div>
+              <span class="experience-dates">June 2024 &ndash; April 2025</span>
+            </div>
+            <ul class="experience-bullets">
+              <li>Reduced API response times by 150ms through backend redesign, Go concurrency, query optimization, and caching mechanisms.</li>
+              <li>Built high-performance, scalable services using Go, NATS (streaming), and ScyllaDB; integrated in-house AI capabilities via gRPC.</li>
+              <li>Reduced codebase size by 30% through clean coding practices and refactoring, improving maintainability and readability.</li>
+              <li>Implemented caching strategies to lower resource utilization and delivered robust data solutions across ScyllaDB, PostgreSQL, and ClickHouse.</li>
+            </ul>
+          </article>
+
+          <article class="experience-item">
+            <div class="experience-header">
+              <div>
+                <h3>Software Engineering Intern</h3>
+                <p class="experience-company">Zuddl, Curie Microelectronics, Plaxonic</p>
+              </div>
+              <span class="experience-dates">May 2022 &ndash; May 2024</span>
+            </div>
+            <ul class="experience-bullets">
+              <li>Delivered production features across native iOS applications (Swift/SwiftUI), including BLE integrations, backend-driven UI, and location services, collaborating with cross-functional engineering teams.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <!-- projects -->
+      <section class="projects" id="projects">
+
+        <p class="section-label">Projects I've built</p>
+
+        <div class="project-grid">
+          <article class="project-card">
+            <div class="project-card-header">
+              <h3>Self-Hosted Blog &amp; Portfolio on a Raspberry Pi</h3>
+            </div>
+            <p class="project-description">
+              Designed and self-hosted my blog and portfolio entirely on a Raspberry Pi 4 at home —
+              architecting the full request path from Cloudflare Tunnel through Nginx to Dockerized services,
+              including a framework-free Go backend that renders Markdown posts from Postgres and proxies
+              media from Cloudflare R2. A hands-on infra project built to learn devops fundamentals without
+              a cloud hosting bill, with observability, CI/CD, and VPS failover on the roadmap.
+            </p>
+            <div class="project-tags">
+              <span class="project-tag">Raspberry Pi 4</span>
+              <span class="project-tag">Go</span>
+              <span class="project-tag">PostgreSQL</span>
+              <span class="project-tag">Docker</span>
+              <span class="project-tag">Cloudflare Tunnel</span>
+              <span class="project-tag">Nginx</span>
+            </div>
+            <a class="project-link" target="_blank" rel="noopener" href="https://blogs.insanelyharsh.com/blog_content.html?slug=self-hosting-blog-portfolio-on-raspberry-pi">Read the write-up &rarr;</a>
+          </article>
+
+          <article class="project-card">
+            <div class="project-card-header">
+              <h3>Upasthit &mdash; Automated Attendance System</h3>
+              <span class="project-badge">Patent Filed</span>
+            </div>
+            <p class="project-description">
+              Led a team to build native iOS and Android apps that automate attendance tracking end-to-end,
+              eliminating manual roll calls. The system's technical novelty resulted in a filed patent application.
+            </p>
+            <div class="project-tags">
+              <span class="project-tag">SwiftUI</span>
+              <span class="project-tag">Firebase</span>
+              <span class="project-tag">Realm</span>
+              <span class="project-tag">CoreBluetooth</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
       <!-- tech stack -->
       <section class="tech-stack">
 
-        <p>My Current Tools for building systems</p>
+        <p class="section-label">My Current Tools for building systems</p>
 
         <div class="stack-image">
           <img alt="svgImg" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciICB2aWV3Qm94PSIwIDAgNDggNDgiIHdpZHRoPSI0OHB4IiBoZWlnaHQ9IjQ4cHgiPjxwYXRoIGZpbGw9IiNmZmNjODAiIGQ9Ik0zNS41NDcgNDIuNDMxbC0zLjE4Mi0zLjE4Mi0yLjEyMSAyLjEyMSAzLjE4MiAzLjE4MmMuNTg2LjU4NiAxLjUzNi41ODYgMi4xMjEgMFMzNi4xMzMgNDMuMDE3IDM1LjU0NyA0Mi40MzF6TTM4LjU0NyAyNC40MzFsLTMuMTgyLTMuMTgyLTIuMTIxIDIuMTIxIDMuMTgyIDMuMTgyYy41ODYuNTg2IDEuNTM2LjU4NiAyLjEyMSAwUzM5LjEzMyAyNS4wMTcgMzguNTQ3IDI0LjQzMXpNMTIuNjgzIDQyLjQzMWwzLjE4Mi0zLjE4MiAyLjEyMSAyLjEyMS0zLjE4MiAzLjE4MmMtLjU4Ni41ODYtMS41MzYuNTg2LTIuMTIxIDBTMTIuMDk3IDQzLjAxNyAxMi42ODMgNDIuNDMxek05LjQzMyAyNC40MzFsMy4xODItMy4xODIgMi4xMjEgMi4xMjEtMy4xODIgMy4xODJjLS41ODYuNTg2LTEuNTM2LjU4Ni0yLjEyMSAwUzguODQ3IDI1LjAxNyA5LjQzMyAyNC40MzF6Ii8+PHBhdGggZmlsbD0iIzRkZDBlMSIgZD0iTTM4IDhjMC0xLjkzMy0xLjE0OS0zLTMuMjMxLTNTMzEgNy41NjcgMzEgOS41YzAgMSAxLjkyMyAxLjUgMyAxLjVDMzYuMDgyIDExIDM4IDkuOTMzIDM4IDh6TTEwIDhjMC0xLjkzMyAxLjE0OS0zIDMuMjMxLTNTMTcgNy41NjcgMTcgOS41YzAgMS0xLjkyMyAxLjUtMyAxLjVDMTEuOTE4IDExIDEwIDkuOTMzIDEwIDh6Ii8+PHBhdGggZmlsbD0iIzQyNDI0MiIgZD0iTTM1IDdBMSAxIDAgMSAwIDM1IDkgMSAxIDAgMSAwIDM1IDd6TTEzIDdBMSAxIDAgMSAwIDEzIDkgMSAxIDAgMSAwIDEzIDd6Ii8+PHBhdGggZmlsbD0iIzRkZDBlMSIgZD0iTTM3LDM0YzAsNC43NzQtMy4yMTksMTAtMTMuMzEsMTBDMTUuNTY4LDQ0LDExLDM4Ljc3NCwxMSwzNGMwLTUsMS01LjgwNiwxLTEwYzAtNC42ODgsMC03LDAtMTAgYzAtNC43NzQsMy4wNzYtMTEsMTEuNjktMTFTMzYsNi45OTEsMzYsMTNjMCwzLTAuMjM3LDUuNDUzLDAsMTBDMzYuMTg2LDI2LjU2MiwzNywzMSwzNywzNHoiLz48Zz48cGF0aCBmaWxsPSIjZjVmNWY1IiBkPSJNMjkgNkE0IDQgMCAxIDAgMjkgMTQgNCA0IDAgMSAwIDI5IDZ6TTE5IDZBNCA0IDAgMSAwIDE5IDE0IDQgNCAwIDEgMCAxOSA2eiIvPjwvZz48Zz48cGF0aCBmaWxsPSIjZWVlIiBkPSJNMjQgMjBjMCAuNTUyLjQ0OCAxIDEgMXMxLS40NDggMS0xdi0zaC0yVjIwek0yMiAyMGMwIC41NTIuNDQ4IDEgMSAxczEtLjQ0OCAxLTF2LTNoLTJWMjB6Ii8+PC9nPjxwYXRoIGZpbGw9IiNmZmNjODAiIGQ9Ik0yNi41LDE4Yy0wLjQxMiwwLTAuNjUzLTAuMDg1LTEuMDExLTAuMjA1Yy0wLjk3NS0wLjMyOC0yLjAyMS0wLjMyNi0yLjk5NiwwLjAwMiBDMjIuMTM4LDE3LjkxNiwyMS45MSwxOCwyMS41LDE4Yy0xLjMzNCwwLTEuNS0xLTEuNS0xLjVjMC0xLjUsMS41LTIuNSwzLTIuNWMwLjgzNSwwLDEuMTY1LDAsMiwwYzEuNSwwLDMsMSwzLDIuNSBDMjgsMTcsMjcuODM0LDE4LDI2LjUsMTh6Ii8+PGc+PHBhdGggZmlsbD0iIzQyNDI0MiIgZD0iTTI3IDlBMSAxIDAgMSAwIDI3IDExIDEgMSAwIDEgMCAyNyA5ek0xNyA5QTEgMSAwIDEgMCAxNyAxMSAxIDEgMCAxIDAgMTcgOXpNMjQgMTNBMiAxIDAgMSAwIDI0IDE1IDIgMSAwIDEgMCAyNCAxM3oiLz48L2c+PC9zdmc+"/>
@@ -90,34 +195,51 @@
       </div> -->
   </main>
 
-  <footer style="background-color: #333; color: #fff; padding: 20px; text-align: center;">
+  <footer class="footer">
     <!-- <div> -->
         <!-- <p>&copy; 2025 Harsh Yadav. All rights reserved.</p> -->
     <!-- </div> -->
     <div>
         <p>Connect with me:</p>
-        <a href="https://www.linkedin.com/in/insanelyharsh" target="_blank" style="color: #fff; text-decoration: none; margin: 0 10px;">LinkedIn</a>|
-        <a href="https://github.com/insanelyharsh" target="_blank" style="color: #fff; text-decoration: none; margin: 0 10px;">GitHub</a>|
-        <a href="https://twitter.com/amiharsh_" target="_blank" style="color: #fff; text-decoration: none; margin: 0 10px;">Twitter</a>
+        <div class="footer-links">
+          <a href="https://www.linkedin.com/in/insanelyharsh" target="_blank">LinkedIn</a>
+          <a href="https://github.com/insanelyharsh" target="_blank">GitHub</a>
+          <a href="https://twitter.com/amiharsh_" target="_blank">Twitter</a>
+        </div>
     </div>
     <div>
-        <p>Contact: <a href="mailto:harshmyadav2002@gmail.com" style="color: #fff; text-decoration: none;">harshmyadav2002@gmail.com</a></p>
+        <p>Contact: <a class="footer-contact-link" href="mailto:harshmyadav2002@gmail.com">harshmyadav2002@gmail.com</a></p>
     </div>
 </footer>
   <script>
+    const sidebar = document.querySelector('.sidebar')
+    const sidebarBackdrop = document.getElementById('sidebarBackdrop')
+
     function showSidebar(){
-      const sidebar = document.querySelector('.sidebar')
       sidebar.style.display = 'flex'
+      sidebarBackdrop.style.display = 'block'
     }
     function hideSidebar(){
-      const sidebar = document.querySelector('.sidebar')
       sidebar.style.display = 'none'
+      sidebarBackdrop.style.display = 'none'
     }
 
     //contact footer
     function scrollToBottom() {
       window.scrollTo(0, document.body.scrollHeight);
     }
+
+    document.getElementById('openSidebarBtn').addEventListener('click', showSidebar)
+    document.getElementById('closeSidebarBtn').addEventListener('click', hideSidebar)
+    sidebarBackdrop.addEventListener('click', hideSidebar)
+    document.getElementById('contactBtn').addEventListener('click', scrollToBottom)
+    document.getElementById('sidebarContactBtn').addEventListener('click', () => {
+      scrollToBottom()
+      hideSidebar()
+    })
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') hideSidebar()
+    })
   </script>
 </body>
 </html>

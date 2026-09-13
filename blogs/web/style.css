@@ -3,9 +3,21 @@
   --bg-elevated: #1e1e1e;
   --text-primary: #e8e8e8;
   --text-secondary: #a0a0a0;
-  --accent: #6ea8fe;
+  --accent: #6c63ff;
+  --accent-soft: rgba(108, 99, 255, 0.18);
   --border: #2c2c2c;
   --title-color: #b8bcc4;
+  --font-sans: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+:root[data-theme="light"] {
+  --bg: #fafafa;
+  --bg-elevated: #ffffff;
+  --text-primary: #1a1a2e;
+  --text-secondary: #6b7280;
+  --accent: #6c63ff;
+  --accent-soft: rgba(108, 99, 255, 0.1);
+  --border: #ececf1;
 }
 
 * {
@@ -17,21 +29,25 @@
 body {
   background-color: var(--bg);
   color: var(--text-primary);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-sans);
   line-height: 1.6;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Nav bar */
 .navbar {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  padding: 1.25rem 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--border);
   background-color: var(--bg-elevated);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .navbar__title {
@@ -44,6 +60,44 @@ body {
 
 .navbar__title:hover {
   opacity: 0.85;
+}
+
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.navbar__link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+
+.navbar__link:hover {
+  color: var(--accent);
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background-color: var(--bg);
+  color: var(--text-primary);
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.2s ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--accent);
 }
 
 /* Blog listing page */
@@ -61,6 +115,7 @@ body {
   width: 100%;
   max-width: 640px;
   background-color: var(--bg-elevated);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 1.25rem 1.5rem;
   text-decoration: none;
@@ -68,7 +123,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  transition: transform 0.15s ease;
+  transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .blog-card:hover {
@@ -102,16 +157,6 @@ body {
   gap: 1rem;
 }
 
-.post__title {
-  font-size: 1.75rem;
-  color: var(--text-primary);
-}
-
-.post__meta {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-}
-
 .post__content p {
   color: var(--text-primary);
 }
@@ -136,8 +181,17 @@ body {
   color: var(--accent);
 }
 
+.post__body img {
+  display: block;
+  max-width: 90%;
+  height: auto;
+  margin: 0.25rem auto;
+  border-radius: 8px;
+}
+
 .post__body code {
   background-color: var(--bg-elevated);
+  border: 1px solid var(--border);
   padding: 0.15em 0.35em;
   border-radius: 4px;
   font-family: monospace;
@@ -145,6 +199,7 @@ body {
 
 .post__body pre {
   background-color: var(--bg-elevated);
+  border: 1px solid var(--border);
   padding: 1rem;
   border-radius: 8px;
   overflow-x: auto;
@@ -152,6 +207,8 @@ body {
 
 .post__body pre code {
   padding: 0;
+  border: none;
+  background: none;
 }
 
 .post__body blockquote {
@@ -166,12 +223,12 @@ body {
   margin-top: 0.5rem;
 }
 
-.post__body img {
-  display: block;
-  width: 80%;
-  max-width: 100%;
-  height: auto;
-  margin: 0 auto;
+/* The content's own first heading doubles as the post title (the backend
+   no longer sends a separate title field), so give it real title weight. */
+.post__body h1:first-child {
+  font-size: 1.75rem;
+  color: var(--text-primary);
+  margin-top: 0;
 }
 
 /* Fetch/validation error states */
@@ -181,11 +238,23 @@ body {
 
 /* Responsive basics */
 @media (max-width: 480px) {
+  .navbar {
+    padding: 1rem;
+  }
+
   .navbar__title {
     font-size: 1.1rem;
   }
 
-  .post__title {
+  .navbar__actions {
+    gap: 0.6rem;
+  }
+
+  .navbar__link {
+    font-size: 0.85rem;
+  }
+
+  .post__body h1:first-child {
     font-size: 1.4rem;
   }
 

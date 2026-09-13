@@ -17,7 +17,8 @@ const CONTENT_TYPES = {
 };
 
 const server = http.createServer((req, res) => {
-  const requestPath = req.url === '/' ? '/index.html' : req.url;
+  const urlPath = req.url.split('?')[0];
+  const requestPath = urlPath === '/' ? '/index.html' : urlPath;
   const safePath = path.normalize(decodeURIComponent(requestPath)).replace(/^(\.\.[/\\])+/, '');
   const filePath = path.join(ROOT, safePath);
 
@@ -42,7 +43,11 @@ const server = http.createServer((req, res) => {
 
     const ext = path.extname(filePath).toLowerCase();
     const contentType = CONTENT_TYPES[ext] || 'application/octet-stream';
-    res.writeHead(200, { 'Content-Type': contentType });
+    // No Cache-Control here previously meant Cloudflare fell back to its own
+    // default edge-cache TTL for static extensions (hours), so a deploy could
+    // update the origin while the CDN kept serving a stale cached copy.
+    // `no-cache` forces a revalidation every time instead.
+    res.writeHead(200, { 'Content-Type': contentType, 'Cache-Control': 'no-cache' });
     res.end(data);
   });
 });

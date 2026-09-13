@@ -1,8 +1,20 @@
-const API_BASE = "__API_BASE__";
+// Guards against a misconfigured API_BASE env var (e.g. missing the "https://"
+// scheme, or a trailing slash). Without this, a value like
+// "blogs.insanelyharsh.com/api/" gets used as `${API_BASE}/blogs`, which
+// fetch() then treats as a path *relative to the current page* instead of an
+// absolute URL.
+function normalizeApiBase(raw) {
+  let base = (raw || "").trim();
+  if (base && !/^https?:\/\//i.test(base) && !base.startsWith("/")) {
+    base = `https://${base}`;
+  }
+  return base.replace(/\/+$/, "");
+}
+
+const API_BASE = normalizeApiBase("__API_BASE__");
 
 // Shared GET helper: logs the request, distinguishes network failures from
-// HTTP error statuses, and gives 404s a caller-supplied message. Returns the
-// raw Response so callers can decide how to parse the body (json vs text).
+// HTTP error statuses, and gives 404s a caller-supplied message.
 async function fetchOrThrow(url, { label, notFoundMessage } = {}) {
   console.log(`[blogs] GET ${url}`);
   let res;
@@ -28,13 +40,13 @@ async function fetchBlogList() {
   return res.json();
 }
 
+// The backend renders the post server-side and returns it as raw HTML
+// (not JSON) — title and images are already embedded in the markup.
 async function fetchBlogBySlug(slug) {
   const res = await fetchOrThrow(`${API_BASE}/blogs/${encodeURIComponent(slug)}`, {
     label: `blog by slug "${slug}"`,
     notFoundMessage: `Blog not found for slug "${slug}"`,
   });
-  // The backend renders the post server-side and returns it as raw HTML
-  // (not JSON) — title and images are already embedded in the markup.
   return res.text();
 }
 
@@ -68,10 +80,10 @@ function renderBlogList(container, items) {
   });
 }
 
-// Renders a single blog post's HTML into `container` (a
-// <article class="post__content">). `html` is the backend's fully
-// server-rendered post markup (title heading and image URLs already
-// embedded), so it's injected as-is rather than being assembled from parts.
+// Renders a post's rendered HTML (from fetchBlogBySlug) into `container`
+// (a <article class="post__content">). The backend no longer sends
+// title/date separately — the content's own first heading (if any) doubles
+// as the visual title, and is used for document.title too.
 function renderBlogPost(container, html) {
   container.innerHTML = "";
 
@@ -80,6 +92,9 @@ function renderBlogPost(container, html) {
   // Trusted: this is the site owner's own backend-rendered content, not
   // user-submitted input, so no sanitization step is added here.
   body.innerHTML = html;
+
+  const heading = body.querySelector("h1, h2");
+  document.title = heading ? `${heading.textContent} — Insane Blogs` : "Insane Blogs";
 
   const backPara = document.createElement("p");
   const backLink = document.createElement("a");
@@ -99,3 +114,35 @@ function renderError(container, err) {
   p.textContent = (err && err.message) || "Something went wrong.";
   container.appendChild(p);
 }
+
+// Theme toggle (dark/light, persisted in localStorage).
+// The actual theme is applied before first paint by an inline script in
+// <head> on each page; this just wires up the button and keeps it in sync.
+const THEME_KEY = "blog-theme";
+
+function currentTheme() {
+  return document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+}
+
+function updateThemeToggleUI(theme) {
+  const toggle = document.getElementById("themeToggle");
+  if (!toggle) return;
+  toggle.textContent = theme === "dark" ? "☀️" : "🌙";
+  toggle.setAttribute("aria-label", theme === "dark" ? "Switch to light mode" : "Switch to dark mode");
+}
+
+function setTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem(THEME_KEY, theme);
+  updateThemeToggleUI(theme);
+}
+
+function initThemeToggle() {
+  updateThemeToggleUI(currentTheme());
+  const toggle = document.getElementById("themeToggle");
+  if (toggle) {
+    toggle.addEventListener("click", () => setTheme(currentTheme() === "dark" ? "light" : "dark"));
+  }
+}
+
+document.addEventListener("DOMContentLoaded", initThemeToggle);
