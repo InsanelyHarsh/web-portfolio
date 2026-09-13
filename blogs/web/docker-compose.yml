@@ -2,6 +2,7 @@ services:
   blogs-web:
     image: insanelyharsh/blogs-web:latest
     build: .
+    pull_policy: always
     network_mode: host
     env_file:
       - .env

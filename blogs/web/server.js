@@ -110,7 +110,13 @@ const server = http.createServer((req, res) => {
       ? data.toString('utf8').replace('__API_BASE__', API_BASE)
       : data;
 
-    respond(req, res, 200, contentType, body);
+    // No Cache-Control here previously meant Cloudflare fell back to its own
+    // default edge-cache TTL for static extensions (hours), so a deploy could
+    // update the origin while the CDN kept serving a stale cached copy.
+    // `no-cache` forces a revalidation every time instead.
+    res.writeHead(200, { 'Content-Type': contentType, 'Cache-Control': 'no-cache' });
+    res.end(body);
+    logRequest(req, 200);
   });
 });
 

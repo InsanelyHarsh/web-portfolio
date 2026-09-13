@@ -4,11 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Insane Blogs</title>
+  <script>
+    // Applied before first paint to avoid a light/dark flash on load.
+    (function () {
+      var KEY = "blog-theme";
+      var stored = localStorage.getItem(KEY);
+      var theme = stored === "light" || stored === "dark"
+        ? stored
+        : (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="navbar">
     <a href="blog_list.html" class="navbar__title">Insane Blogs</a>
+    <div class="navbar__actions">
+      <a href="https://insanelyharsh.com" class="navbar__link">Portfolio</a>
+      <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle color theme"></button>
+    </div>
   </header>
 
   <main class="blog-list" id="blog-list"></main>
