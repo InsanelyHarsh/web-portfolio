@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Insane Blogs</title>
   <script>
-    // Applied before first paint to avoid a light/dark flash on load.
     (function () {
       var KEY = "blog-theme";
       var stored = localStorage.getItem(KEY);
@@ -31,22 +30,27 @@
 
   <main class="post">
     <article class="post__content" id="post-content"></article>
+    <section class="comments" id="comments" aria-label="Comments"></section>
   </main>
 
   <script src="app.js"></script>
+  <script src="comments.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const container = document.getElementById("post-content");
+      const postContainer = document.getElementById("post-content");
+      const commentsContainer = document.getElementById("comments");
       const slug = new URLSearchParams(location.search).get("slug");
 
       if (!slug) {
-        renderError(container, new Error("Missing slug in URL"));
+        renderError(postContainer, new Error("Missing slug in URL"));
         return;
       }
 
       fetchBlogBySlug(slug)
-        .then((html) => renderBlogPost(container, html))
-        .catch((err) => renderError(container, err));
+        .then((html) => renderBlogPost(postContainer, html))
+        .catch((err) => renderError(postContainer, err));
+
+      initComments(commentsContainer, slug);
     });
   </script>
 </body>
