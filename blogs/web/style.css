@@ -244,6 +244,12 @@ body {
   font-size: 1.25rem;
 }
 
+.comments__notice {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
 .comments__list {
   display: flex;
   flex-direction: column;

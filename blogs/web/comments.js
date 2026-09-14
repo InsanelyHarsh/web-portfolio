@@ -36,7 +36,13 @@ function initComments(container, slug) {
   const list = el("div", "comments__list");
   const form = buildCommentForm({ slug, parentId: null, onSuccess: () => loadAndRenderComments(list, slug) });
 
-  container.append(el("h2", "comments__heading", "Comments"), list, form);
+  const notice = el(
+    "p",
+    "comments__notice",
+    "Keep it respectful — no hate speech, harassment, or offensive language."
+  );
+
+  container.append(el("h2", "comments__heading", "Comments"), list, form, notice);
   loadAndRenderComments(list, slug);
 }
 
@@ -205,6 +211,10 @@ function buildCommentForm({ slug, parentId, onSuccess, showCancel = false, onCan
 
     try {
       await postComment(slug, payload);
+      nameInput.value = "";
+      nameInput.disabled = false;
+      contentInput.value = "";
+      anonInput.checked = false;
       onSuccess?.();
     } catch (err) {
       showError(err.message || "Failed to post comment.");
