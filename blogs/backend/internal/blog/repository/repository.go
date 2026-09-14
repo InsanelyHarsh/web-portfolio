@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/insanelyharsh/web-portfolio/internal/blog/models"
+	"github.com/insanelyharsh/web-portfolio/internal/config"
 	"github.com/insanelyharsh/web-portfolio/internal/types"
 	"github.com/jackc/pgx/v5"
 )
@@ -15,16 +16,11 @@ type BlogRepository interface {
 	GetBlogList(ctx context.Context) ([]*models.BlogListItem, error)
 }
 
-type PgxIface interface {
-	Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
-	QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
-}
-
 type BlogRepositoryImpl struct {
-	db PgxIface
+	db config.PgxIface
 }
 
-func NewBlogRepository(db PgxIface) BlogRepository {
+func NewBlogRepository(db config.PgxIface) BlogRepository {
 	return &BlogRepositoryImpl{
 		db: db,
 	}

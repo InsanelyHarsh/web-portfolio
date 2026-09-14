@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/insanelyharsh/web-portfolio/internal/comment/models"
+	"github.com/insanelyharsh/web-portfolio/internal/config"
 	"github.com/insanelyharsh/web-portfolio/internal/types"
 	"github.com/jackc/pgx/v5"
 )
@@ -15,20 +16,11 @@ type CommentRepository interface {
 	CreateComment(ctx context.Context, comment *models.Comment) (*models.Comment, error)
 }
 
-// PgxIface is satisfied by both *pgxpool.Pool and *pgx.Conn. Repositories
-// depend on this instead of a concrete *pgx.Conn because a single Conn is
-// not safe for concurrent use by multiple goroutines (as this HTTP backend
-// does) — a pool hands each query its own connection.
-type PgxIface interface {
-	Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
-	QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
-}
-
 type CommentRepositoryImpl struct {
-	db PgxIface
+	db config.PgxIface
 }
 
-func NewCommentRepository(db PgxIface) CommentRepository {
+func NewCommentRepository(db config.PgxIface) CommentRepository {
 	return &CommentRepositoryImpl{
 		db: db,
 	}

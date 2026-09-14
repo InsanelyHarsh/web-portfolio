@@ -7,8 +7,14 @@ import (
 	"net/url"
 	"os"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
+
+type PgxIface interface {
+	Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
+	QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
+}
 
 func InitPostgres(ctx context.Context) (*pgxpool.Pool, error) {
 	host := os.Getenv("DB_HOST")
