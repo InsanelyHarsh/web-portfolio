@@ -2,7 +2,6 @@ package routes
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 	"strconv"
 
@@ -20,7 +19,13 @@ func RegisterBlogRoutes(mux *http.ServeMux, manager *blog.BlogManager) {
 func getBlogListHandler(manager *blog.BlogManager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		list, err := manager.GetBlogList(r.Context())
-		writeBlogResult(w, list, err)
+		if err != nil {
+			writeError(r.Context(), w, err, "blog not found")
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(list)
 	}
 }
 
@@ -34,7 +39,7 @@ func getBlogByIdHandler(manager *blog.BlogManager) http.HandlerFunc {
 		}
 
 		content, err := manager.GetBlogContentById(r.Context(), types.BlogId(id))
-		writeBlogHTMLResult(w, content, err)
+		writeBlogHTMLResult(w, r, content, err)
 	}
 }
 
@@ -43,31 +48,13 @@ func getBlogBySlugHandler(manager *blog.BlogManager) http.HandlerFunc {
 		slug := r.PathValue("slug")
 
 		content, err := manager.GetBlogContentBySlug(r.Context(), types.BlogSlug(slug))
-		writeBlogHTMLResult(w, content, err)
+		writeBlogHTMLResult(w, r, content, err)
 	}
 }
 
-func writeBlogResult(w http.ResponseWriter, content any, err error) {
+func writeBlogHTMLResult(w http.ResponseWriter, r *http.Request, content *dtos.Blog, err error) {
 	if err != nil {
-		if errors.Is(err, blog.ErrNotFound) {
-			http.Error(w, "blog not found", http.StatusNotFound)
-			return
-		}
-		http.Error(w, "internal server error", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(content)
-}
-
-func writeBlogHTMLResult(w http.ResponseWriter, content *dtos.Blog, err error) {
-	if err != nil {
-		if errors.Is(err, blog.ErrNotFound) {
-			http.Error(w, "blog not found", http.StatusNotFound)
-			return
-		}
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+		writeError(r.Context(), w, err, "blog not found")
 		return
 	}
 

@@ -10,6 +10,8 @@ import (
 
 	"github.com/insanelyharsh/web-portfolio/internal/blog"
 	"github.com/insanelyharsh/web-portfolio/internal/blog/repository"
+	"github.com/insanelyharsh/web-portfolio/internal/comment"
+	commentrepository "github.com/insanelyharsh/web-portfolio/internal/comment/repository"
 	"github.com/insanelyharsh/web-portfolio/internal/config"
 	"github.com/insanelyharsh/web-portfolio/internal/logger"
 	"github.com/insanelyharsh/web-portfolio/internal/media"
@@ -39,6 +41,9 @@ func main() {
 
 	repo := repository.NewBlogRepository(*conn)
 	manager := blog.NewBlogManager(repo)
+
+	commentRepo := commentrepository.NewCommentRepository(*conn)
+	commentManager := comment.NewCommentManager(commentRepo, repo)
 
 	r2Client, r2Cfg, err := config.InitCloudflareR2()
 	if err != nil {
@@ -72,6 +77,7 @@ func main() {
 		CORSAllowedHeaders: corsAllowedHeaders,
 	})
 	routes.RegisterBlogRoutes(ws.Mux(), manager)
+	routes.RegisterCommentRoutes(ws.Mux(), commentManager)
 	routes.RegisterMediaRoutes(ws.Mux(), mediaManager)
 
 	serveErr := make(chan error, 1)
