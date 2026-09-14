@@ -15,11 +15,16 @@ type BlogRepository interface {
 	GetBlogList(ctx context.Context) ([]*models.BlogListItem, error)
 }
 
-type BlogRepositoryImpl struct {
-	db pgx.Conn
+type PgxIface interface {
+	Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
+	QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
 }
 
-func NewBlogRepository(db pgx.Conn) BlogRepository {
+type BlogRepositoryImpl struct {
+	db PgxIface
+}
+
+func NewBlogRepository(db PgxIface) BlogRepository {
 	return &BlogRepositoryImpl{
 		db: db,
 	}

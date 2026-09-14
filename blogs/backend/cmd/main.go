@@ -26,22 +26,22 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	conn, err := config.InitPostgres(ctx)
+	pool, err := config.InitPostgres(ctx)
 	if err != nil {
 		slog.Error("failed to connect to postgres", "error", err)
 		os.Exit(1)
 	}
-	defer conn.Close(context.Background())
+	defer pool.Close()
 
-	// if err := migration.Run(ctx, conn); err != nil {
+	// if err := migration.Run(ctx, pool); err != nil {
 	// 	slog.Error("failed to run migrations", "error", err)
 	// 	os.Exit(1)
 	// }
 
-	repo := repository.NewBlogRepository(*conn)
+	repo := repository.NewBlogRepository(pool)
 	manager := blog.NewBlogManager(repo)
 
-	commentRepo := commentrepository.NewCommentRepository(*conn)
+	commentRepo := commentrepository.NewCommentRepository(pool)
 	commentManager := comment.NewCommentManager(commentRepo, repo)
 
 	r2Client, r2Cfg, err := config.InitCloudflareR2()

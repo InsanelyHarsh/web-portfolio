@@ -15,11 +15,20 @@ type CommentRepository interface {
 	CreateComment(ctx context.Context, comment *models.Comment) (*models.Comment, error)
 }
 
-type CommentRepositoryImpl struct {
-	db pgx.Conn
+// PgxIface is satisfied by both *pgxpool.Pool and *pgx.Conn. Repositories
+// depend on this instead of a concrete *pgx.Conn because a single Conn is
+// not safe for concurrent use by multiple goroutines (as this HTTP backend
+// does) — a pool hands each query its own connection.
+type PgxIface interface {
+	Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
+	QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
 }
 
-func NewCommentRepository(db pgx.Conn) CommentRepository {
+type CommentRepositoryImpl struct {
+	db PgxIface
+}
+
+func NewCommentRepository(db PgxIface) CommentRepository {
 	return &CommentRepositoryImpl{
 		db: db,
 	}
