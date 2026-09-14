@@ -16,7 +16,6 @@ import (
 	"github.com/insanelyharsh/web-portfolio/internal/logger"
 	"github.com/insanelyharsh/web-portfolio/internal/media"
 	mediarepository "github.com/insanelyharsh/web-portfolio/internal/media/repository"
-	"github.com/insanelyharsh/web-portfolio/internal/migration"
 	"github.com/insanelyharsh/web-portfolio/internal/webserver"
 	"github.com/insanelyharsh/web-portfolio/internal/webserver/routes"
 )
@@ -34,10 +33,10 @@ func main() {
 	}
 	defer conn.Close(context.Background())
 
-	if err := migration.Run(ctx, conn); err != nil {
-		slog.Error("failed to run migrations", "error", err)
-		os.Exit(1)
-	}
+	// if err := migration.Run(ctx, conn); err != nil {
+	// 	slog.Error("failed to run migrations", "error", err)
+	// 	os.Exit(1)
+	// }
 
 	repo := repository.NewBlogRepository(*conn)
 	manager := blog.NewBlogManager(repo)
