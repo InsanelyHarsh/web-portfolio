@@ -20,9 +20,6 @@ import (
 )
 
 func main() {
-	// DATABASE_URL, PORT, and LOG_LEVEL are expected to be set externally —
-	// via the shell for local `go run`, or via docker-compose's env_file for
-	// the containerized setup (see docker-compose.yml).
 	logger.Init()
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
@@ -40,9 +37,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	// NewBlogRepository takes pgx.Conn by value; a single one-time copy off
-	// the pointer InitPostgres returns is safe here since nothing else
-	// queries through the original *pgx.Conn afterward (only Close, below).
 	repo := repository.NewBlogRepository(*conn)
 	manager := blog.NewBlogManager(repo)
 
@@ -59,10 +53,6 @@ func main() {
 		port = "8080"
 	}
 
-	// Normalized defensively: a value with a path/query pasted in by mistake
-	// (e.g. a full page URL instead of just its origin) would otherwise
-	// silently never match a browser's Origin header and CORS would appear
-	// to just not work.
 	corsAllowedOrigins := config.ParseCommaSeparated(os.Getenv("CORS_ALLOWED_ORIGIN"))
 	for i, origin := range corsAllowedOrigins {
 		corsAllowedOrigins[i] = config.NormalizeOrigin(origin)

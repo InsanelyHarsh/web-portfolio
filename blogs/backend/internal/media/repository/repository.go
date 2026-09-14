@@ -11,9 +11,6 @@ import (
 )
 
 type MediaRepository interface {
-	// GetObject fetches an object from R2 by key (resolved against the
-	// configured base path). The caller owns the returned response body
-	// and must close it.
 	GetObject(ctx context.Context, key string) (*http.Response, error)
 }
 
