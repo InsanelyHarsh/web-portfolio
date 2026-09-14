@@ -6,6 +6,10 @@ RUN go mod download
 
 COPY . .
 
+# Run on BUILDPLATFORM (native, no QEMU) before the cross-compiled build
+# below, so a failing test fails the image build itself.
+RUN go test ./...
+
 # TARGETOS/TARGETARCH are populated automatically by `docker buildx build
 # --platform linux/amd64,linux/arm64 ...`, so this cross-compiles cleanly
 # for both architectures without any extra flags.
