@@ -10,11 +10,12 @@ import (
 
 	"github.com/insanelyharsh/web-portfolio/internal/blog"
 	"github.com/insanelyharsh/web-portfolio/internal/blog/repository"
+	"github.com/insanelyharsh/web-portfolio/internal/comment"
+	commentrepository "github.com/insanelyharsh/web-portfolio/internal/comment/repository"
 	"github.com/insanelyharsh/web-portfolio/internal/config"
 	"github.com/insanelyharsh/web-portfolio/internal/logger"
 	"github.com/insanelyharsh/web-portfolio/internal/media"
 	mediarepository "github.com/insanelyharsh/web-portfolio/internal/media/repository"
-	"github.com/insanelyharsh/web-portfolio/internal/migration"
 	"github.com/insanelyharsh/web-portfolio/internal/webserver"
 	"github.com/insanelyharsh/web-portfolio/internal/webserver/routes"
 )
@@ -25,20 +26,23 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	conn, err := config.InitPostgres(ctx)
+	pool, err := config.InitPostgres(ctx)
 	if err != nil {
 		slog.Error("failed to connect to postgres", "error", err)
 		os.Exit(1)
 	}
-	defer conn.Close(context.Background())
+	defer pool.Close()
 
-	if err := migration.Run(ctx, conn); err != nil {
-		slog.Error("failed to run migrations", "error", err)
-		os.Exit(1)
-	}
+	// if err := migration.Run(ctx, pool); err != nil {
+	// 	slog.Error("failed to run migrations", "error", err)
+	// 	os.Exit(1)
+	// }
 
-	repo := repository.NewBlogRepository(*conn)
+	repo := repository.NewBlogRepository(pool)
 	manager := blog.NewBlogManager(repo)
+
+	commentRepo := commentrepository.NewCommentRepository(pool)
+	commentManager := comment.NewCommentManager(commentRepo, repo)
 
 	r2Client, r2Cfg, err := config.InitCloudflareR2()
 	if err != nil {
@@ -72,6 +76,7 @@ func main() {
 		CORSAllowedHeaders: corsAllowedHeaders,
 	})
 	routes.RegisterBlogRoutes(ws.Mux(), manager)
+	routes.RegisterCommentRoutes(ws.Mux(), commentManager)
 	routes.RegisterMediaRoutes(ws.Mux(), mediaManager)
 
 	serveErr := make(chan error, 1)

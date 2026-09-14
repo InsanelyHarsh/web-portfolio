@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/insanelyharsh/web-portfolio/internal/blog/models"
+	"github.com/insanelyharsh/web-portfolio/internal/config"
 	"github.com/insanelyharsh/web-portfolio/internal/types"
 	"github.com/jackc/pgx/v5"
 )
@@ -16,10 +17,10 @@ type BlogRepository interface {
 }
 
 type BlogRepositoryImpl struct {
-	db pgx.Conn
+	db config.PgxIface
 }
 
-func NewBlogRepository(db pgx.Conn) BlogRepository {
+func NewBlogRepository(db config.PgxIface) BlogRepository {
 	return &BlogRepositoryImpl{
 		db: db,
 	}
