@@ -12,6 +12,7 @@ import (
 // ErrNotFound is returned when a requested media object doesn't exist, so
 // callers (e.g. the HTTP layer) can distinguish "not found" from other
 // failures via errors.Is instead of matching on an error string.
+// TODO: move to custom error package
 var ErrNotFound = errors.New("not found")
 
 type MediaManager struct {
