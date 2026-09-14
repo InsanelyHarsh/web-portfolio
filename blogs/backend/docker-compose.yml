@@ -22,10 +22,12 @@ services:
     env_file: .env
     environment:
       PORT: ${PORT:-8080}
-      # Overrides the .env copy of DATABASE_URL (meant for `go run ./cmd` on
-      # the host) so the containerized webserver reaches Postgres by its
-      # compose service name instead of localhost.
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB}
+      DB_SSLMODE: disable
     ports:
       - "${PORT:-8080}:${PORT:-8080}"
     depends_on:
