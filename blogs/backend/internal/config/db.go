@@ -8,9 +8,15 @@ import (
 	"os"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func InitPostgres(ctx context.Context) (*pgx.Conn, error) {
+type PgxIface interface {
+	Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
+	QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
+}
+
+func InitPostgres(ctx context.Context) (*pgxpool.Pool, error) {
 	host := os.Getenv("DB_HOST")
 	user := os.Getenv("DB_USER")
 	password := os.Getenv("DB_PASSWORD")
@@ -39,10 +45,10 @@ func InitPostgres(ctx context.Context) (*pgx.Conn, error) {
 	q.Set("sslmode", sslmode)
 	connURL.RawQuery = q.Encode()
 
-	conn, err := pgx.Connect(ctx, connURL.String())
+	pool, err := pgxpool.New(ctx, connURL.String())
 	if err != nil {
 		return nil, err
 	}
 
-	return conn, nil
+	return pool, nil
 }

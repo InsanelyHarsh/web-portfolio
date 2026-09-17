@@ -9,7 +9,16 @@ import (
 	"sort"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 )
+
+// PgxIface is satisfied by both *pgxpool.Pool and *pgx.Conn, so Run can be
+// called with either a single connection or a pool.
+type PgxIface interface {
+	Exec(ctx context.Context, sql string, args ...any) (pgconn.CommandTag, error)
+	Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
+	Begin(ctx context.Context) (pgx.Tx, error)
+}
 
 // upMigrations embeds every "*.up.sql" file in this directory so the
 // compiled binary is self-contained: the Docker image needs nothing beyond
@@ -37,7 +46,7 @@ const migrationLockID = 8743028 // arbitrary constant, unique enough for this ap
 //
 // Down migrations (*.down.sql) are intentionally not run here — they exist
 // for manual/ops rollback (e.g. `psql -f ...`), not automatic startup.
-func Run(ctx context.Context, conn *pgx.Conn) error {
+func Run(ctx context.Context, conn PgxIface) error {
 	if _, err := conn.Exec(ctx, "SELECT pg_advisory_lock($1)", migrationLockID); err != nil {
 		return fmt.Errorf("acquire migration lock: %w", err)
 	}
@@ -104,7 +113,7 @@ func pendingMigrations(applied map[string]bool) ([]migrationFile, error) {
 	return pending, nil
 }
 
-func applyMigration(ctx context.Context, conn *pgx.Conn, m migrationFile) error {
+func applyMigration(ctx context.Context, conn PgxIface, m migrationFile) error {
 	sqlBytes, err := upMigrations.ReadFile(m.filename)
 	if err != nil {
 		return fmt.Errorf("read migration %s: %w", m.filename, err)
@@ -131,7 +140,7 @@ func applyMigration(ctx context.Context, conn *pgx.Conn, m migrationFile) error 
 	return nil
 }
 
-func ensureSchemaMigrationsTable(ctx context.Context, conn *pgx.Conn) error {
+func ensureSchemaMigrationsTable(ctx context.Context, conn PgxIface) error {
 	_, err := conn.Exec(ctx, `
 	CREATE TABLE IF NOT EXISTS schema_migrations (
 		version     TEXT PRIMARY KEY,
@@ -140,7 +149,7 @@ func ensureSchemaMigrationsTable(ctx context.Context, conn *pgx.Conn) error {
 	return err
 }
 
-func appliedVersions(ctx context.Context, conn *pgx.Conn) (map[string]bool, error) {
+func appliedVersions(ctx context.Context, conn PgxIface) (map[string]bool, error) {
 	rows, err := conn.Query(ctx, `SELECT version FROM schema_migrations`)
 	if err != nil {
 		return nil, err
