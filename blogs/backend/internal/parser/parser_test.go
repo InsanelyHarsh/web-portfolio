@@ -125,3 +125,39 @@ func TestMarkdownToHTML_StripsArbitraryClass(t *testing.T) {
 		t.Fatalf("expected non-language class on <p> to be stripped, got: %s", out)
 	}
 }
+
+func TestMarkdownToHTML_ExternalLinkGetsSafeAttrs(t *testing.T) {
+	md := `[click me](https://example.com)`
+
+	out := string(MarkdownToHTML([]byte(md)))
+
+	if !strings.Contains(out, `target="_blank"`) {
+		t.Fatalf("expected external link to get target=\"_blank\", got: %s", out)
+	}
+	if !strings.Contains(out, `rel="nofollow noreferrer noopener"`) {
+		t.Fatalf("expected external link to get rel=\"nofollow noreferrer noopener\", got: %s", out)
+	}
+}
+
+func TestMarkdownToHTML_AnchorLinkHasNoTargetOrRel(t *testing.T) {
+	md := "## Some Heading\n\n[jump](#some-heading)"
+
+	out := string(MarkdownToHTML([]byte(md)))
+
+	if strings.Contains(out, "target=") || strings.Contains(out, "rel=") {
+		t.Fatalf("expected in-page anchor link to have no target/rel, got: %s", out)
+	}
+}
+
+func TestMarkdownToHTML_ImageGetsLazyLoading(t *testing.T) {
+	md := `![alt text](https://example.com/a.png)`
+
+	out := string(MarkdownToHTML([]byte(md)))
+
+	if !strings.Contains(out, `loading="lazy"`) {
+		t.Fatalf("expected image to get loading=\"lazy\", got: %s", out)
+	}
+	if !strings.Contains(out, `src="https://example.com/a.png"`) {
+		t.Fatalf("expected image src to be preserved alongside loading attr, got: %s", out)
+	}
+}
